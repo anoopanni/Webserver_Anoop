@@ -29,5 +29,31 @@ public class Server
 class HttpRequest implements Runnable
 {
     Socket socket;
-    public HttpRequest
+    public HttpRequest(Socket socket) throws IOException
+    {
+        this.socket = socket;
+    }
+
+    public void run()
+    {
+        try
+        {
+            handleRequest();
+            System.out.println(socket);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
+    }
+}
+
+
+private void handleRequest() throws IOException{
+    BufferReader in = new BufferReader(new InputStreamReader(socket.getInputStream()));
+    PrintStream o = new PrintStream(new BufferReader(socket.getOutputStream()));
+
+    String command = in.readLine();
+    System.out.println();
+    
 }
