@@ -1,2 +1,2 @@
 # web_server
-Creating a simple web server using C language. 
+Creating a simple web server using Java language. 
