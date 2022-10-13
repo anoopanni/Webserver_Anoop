@@ -9,7 +9,7 @@ public class Server
     {
         if(args.length != 4)
         {
-            System.out.println("Format: Java Server -document_root </Webserver_folder_path> -port <port_number>");
+            System.out.println("Format: Java Server -document_root <path_to_root_folder> -port <port_number>");
             System.exit(0);
         }
 
@@ -28,7 +28,7 @@ public class Server
             System.out.println("");
             System.out.println("Server waiting for new client requests");
             Socket connectionSocket = serverSocket.accept(); // accept() Waits for incoming client/TCP connection request
-            HttpRequest req = new HttpRequest(connectionSocket);    // Object to process the HTTP request message 
+            ThreadRunner req = new ThreadRunner(connectionSocket);    // Object to process the HTTP request message 
             Thread th = new Thread(req);  // Initiating new threads to handle requests
             th.start();   // Start the thread
         }
@@ -36,10 +36,10 @@ public class Server
     }
 }
 
-class HttpRequest implements Runnable
+class ThreadRunner implements Runnable
 {
     Socket socket;
-    public HttpRequest(Socket socket) throws IOException
+    public ThreadRunner(Socket socket) throws IOException
     {
         this.socket = socket;
     }
@@ -95,7 +95,6 @@ class HttpRequest implements Runnable
             }
 
             FileInputStream f = new FileInputStream(file);
-            // SimpleDateFormat format1 = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:Ss z");
 
             // Determine the content type and print HTTP header
             String content = "text/plain";
