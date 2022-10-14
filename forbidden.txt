@@ -1,1 +1,3 @@
 This file has no permission to be opened. Will throw 403 error.
+IMPORTANT!! : Run the following command before trying for 403 error: 
+              chmod 000 forbidden.txt
