@@ -30,6 +30,8 @@ public class Server
             Socket connectionSocket = serverSocket.accept(); // accept() Waits for incoming client/TCP connection request
             ThreadRunner req = new ThreadRunner(connectionSocket);    // Object to process the HTTP request message 
             Thread th = new Thread(req);  // Initiating new threads to handle requests
+            System.out.println("\nThread created: "+th);
+            System.out.println("\nStarting thread..");
             th.start();   // Start the thread
         }
 
