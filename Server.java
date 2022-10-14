@@ -66,7 +66,7 @@ class ThreadRunner implements Runnable
 
         String command = in.readLine(); // command is the first Request line (get /path/file.html version of http) of the HTTP request message.
         System.out.println();
-        System.out.println("\n Request " + command);  // printing  the first Request line.
+        System.out.println("\nRequest " + command);  // printing  the first Request line.
 
         String file="";
         StringTokenizer tokens = new StringTokenizer(command);
@@ -76,7 +76,14 @@ class ThreadRunner implements Runnable
             if (tokens.hasMoreElements() && tokens.nextToken().equalsIgnoreCase("GET") && tokens.hasMoreElements())
                 file = tokens.nextToken();
             else
-            throw new FileNotFoundException(); // Bad request
+            {
+                out.print("HTTP/1.0 400 Bad request\r\n\r\n"+
+                "<html><head></head><body>HTTP/1.0 400 Bad request<br></body></html>\n");
+                out.close();
+                socket.close();
+                in.close();
+                return;
+            }
 
             if (file.endsWith("/")) //Append "/" with "index.html"
                 file += "index.html";
@@ -90,6 +97,7 @@ class ThreadRunner implements Runnable
                 out.print("<html><head></head><body>HTTP/1.0 403 Forbidden<br>"+"Cannot read File at Location: /"+file+"</body></html>\n");
                 out.close();
                 socket.close();
+                in.close();
                 System.out.println("connection closed");
                 return;
             }
@@ -98,17 +106,17 @@ class ThreadRunner implements Runnable
 
             // Determine the content type and print HTTP header
             String content = "text/plain";
-            if (file.endsWith(".html") || file.endsWith(".htm"))
+            if (file.toLowerCase().endsWith(".html") || file.toLowerCase().endsWith(".htm"))
                 content="text/html";
-                else if (file.endsWith(".jpg") || file.endsWith(".JPG"))
+                else if (file.toLowerCase().endsWith(".jpg"))
                 content="image/jpeg";
-                else if (file.endsWith(".gif") || file.endsWith(".GIF"))
+                else if (file.toLowerCase().endsWith(".gif"))
                 content="image/gif";
-                else if (file.endsWith(".png") || file.endsWith(".PNG"))
+                else if (file.toLowerCase().endsWith(".png"))
                 content="image/png";
-                else if (file.endsWith(".ico") || file.endsWith(".ICO"))
+                else if (file.toLowerCase().endsWith(".ico"))
                 content="/img/favicon.png";
-                else if (file.endsWith(".class"))
+                else if (file.toLowerCase().endsWith(".class"))
                 content="application/octet-stream";
 
                 int filelength=0;
@@ -125,11 +133,8 @@ class ThreadRunner implements Runnable
                 System.out.print("\nSending response headers:\n");
                 System.out.print("HTTP/1.0 200 OK\r\n"+"Date: "+ datetime+"\r\n"+"Content-length: "+ filelength +"\r\n"+
                 "Content-type: "+content+"\r\n\r\n");
-            
-                out.print("HTTP/1.0 200 OK\r\n");
-                out.print("Date: "+ datetime+"\r\n");
-                out.print("Content-length: "+ filelength +"\r\n");
-                out.print("Content-type: "+content+"\r\n\r\n");
+                out.print("HTTP/1.0 200 OK\r\n"+"Date: "+ datetime+"\r\n"+"Content-length: "+ filelength +"\r\n"+
+                "Content-type: "+content+"\r\n\r\n");
 
                 byte buffer[]=new byte[5000];
                 int i;
@@ -137,6 +142,7 @@ class ThreadRunner implements Runnable
                     out.write(buffer, 0, i);
                 out.close();
                 socket.close();
+                in.close();
                 System.out.println("connection closed");
         
         }
